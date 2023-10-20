@@ -1,0 +1,6 @@
+.accepted-button {
+        background-color: green;
+    }
+    .accepted-button[disabled] {
+        background-color: green;
+    }

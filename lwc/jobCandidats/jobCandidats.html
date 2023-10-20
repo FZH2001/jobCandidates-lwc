@@ -1,0 +1,299 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="false" aria-hidden="true" aria-labelledby="modal-heading-01" class={modalClass}>
+        <div class="slds-modal__container">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+            </svg>
+            <span class="slds-assistive-text">Cancel and close</span>
+            </button>
+            <div class="slds-modal__header">
+            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">New Requirement</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <lightning-record-edit-form object-api-name="Requirement__c" onsubmit={handleSubmit}>
+                    <lightning-messages></lightning-messages>
+                    <lightning-input-field field-name="Name" required > </lightning-input-field>
+                    <lightning-input-field field-name="type__c" value={picklistValue} class="slds-hide"> </lightning-input-field>
+                    <div class="slds-grid slds-grid_align-end">
+                    <button class="slds-button slds-button_neutral slds-m-horizontal_xxx-small" aria-label="Cancel and close" onclick={closeModal}>Cancel</button>
+                    <lightning-button
+                        type="submit"
+                        name="submit"
+                        label="Create"
+                        variant="brand"
+                    >
+                    </lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+            </div>
+        </div>
+    </section>
+    <div class={backdropClass} onclick={closeModal} role="presentation"></div>
+    <div class="slds-grid slds-wrap">
+        <div for:each={requirements} for:item="requirement" key={requirement.key} for:index="index" class=" slds-col slds-size_3-of-12">
+            <article class=" slds-m-top_none slds-card  slds-m-horizontal_xxx-small" >
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate" for:each={requirement} for:item="requirementItem" key={requirementItem.Id} for:index="index" if:false={index}>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span >{requirementItem.type__c}</span>
+                            </h2>
+                        </div>
+            <lightning-button-icon icon-name="utility:add" size="medium" onclick={openModal} data-type={requirementItem.type__c}  variant="bare" alternative-text="Add Requirement" title="Add Requirement"></lightning-button-icon>
+                    </header>
+                </div>
+                <div class="slds-card__body slds-p-left_medium slds-scrollable_y" style="height:10rem;">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control ">
+                            <div class="slds-grid" for:each={requirement} for:item="requirementItem" key={requirementItem.Id}>
+                <div class="slds-checkbox slds-col slds-size_6-of-12">
+                    <input type="checkbox" name="filters" id={requirementItem.Id} value={requirementItem.Name} data-requirement-type={requirementItem.type__c}  onchange={handleCheckboxChange}/>
+                    <label class="slds-checkbox__label" for={requirementItem.Id}>
+                    <span class="slds-checkbox_faux"></span>
+                    <span class="slds-form-element__label">{requirementItem.Name}</span>
+                    </label>
+                </div>
+                <div class="slds-form-element slds-col slds-size_6-of-12" style="display:none;">
+                    <div class="slds-form-element__control">
+                        <!-- <select class="slds-select" id={requirementItem.Name}>
+                        <option value="1">Optional</option>
+                        <option value="2">Recommended</option>
+                        <option value="3">Important</option>
+                        </select> -->
+                        <div class="slds-form-element__control" >
+                            <input type="number" id={requirementItem.Name} min="1" value="1" class="slds-input" />
+                        </div>
+                    </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+	</div>
+
+    <div class="slds-m-top_small slds-p-bottom_small"  style="max-height: 500px;overflow-y: auto; ">
+        <div class="slds-m-vertical_xxx-small slds-grid slds-grid_align-spread slds-p-bottom_small">
+            <h2  class="slds-text-heading_medium slds-m-bottom_xx-small">Qualified candidates</h2>
+            <div>
+                <lightning-button label="Reset Filter" title="Reset Filter" onclick={resetFilter} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button variant="brand" label="Apply Filter" title="Apply Filter" onclick={applyFilter} class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </div>
+        <!--
+        <lightning-datatable
+            key-field="id"
+            data={dataList}
+            show-row-number-column
+            row-number-offset={rowOffset}
+            hide-checkbox-column
+            columns={columnsList}
+            onrowaction={handleRowAction}>
+        </lightning-datatable>
+        -->
+
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+            <thead>
+                <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Full Name">Job Application</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Full Name">Full Name</div>
+                </th>
+
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Email">Email</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Rating">Rating</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Score">Status</div>
+
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Score">Score</div>
+
+                </th>
+                <th class="" scope="col">
+                   <!-- <div class="slds-truncate" title="Actions">Actions</div> -->
+                </th>
+                </tr>
+            </thead>
+            <tbody >
+                <tr  key={candidat.Id} class="slds-hint-parent" for:each={candidates} for:item="candidat">
+                    <td scope="row">
+                        <div class="slds-truncate" title={candidat.appName}>
+                            <a href={candidat.JobLink} target="_blank">{candidat.appName}</a>
+                        </div>
+                    </td>
+                    <td scope="row">
+                    <div class="slds-truncate" title={candidat.Name}>
+                        <a href={candidat.LeadLink} target="_blank">{candidat.Name}</a>
+                    </div>
+                    </td>
+                    <!-- <td >
+                    <div class="slds-truncate" title={candidat.Phone}>
+                        <a href='' target="_blank">{candidat.Phone}</a>
+                    </div>
+                    </td> -->
+                    <td >
+                    <div class="slds-truncate" title={candidat.Email}>
+                        <a href=''>{candidat.Email}</a>
+                    </div>
+                    </td>
+                    <td >
+                    {candidat.Score__c} %
+                    </td>
+                    <td >
+                    {candidat.Status__c}
+                    </td>
+                    <td >
+                    {candidat.Score}
+                    </td>     
+                    <td class="slds-grid slds-grid_align-end">
+                        <button class="slds-button slds-button_brand" data-candidate-id={candidat.Id} data-status="Schedule Interviews" onclick={submitFlow} if:false={candidat.showAccept}>Accept</button>
+                            <!-- <button class="slds-button slds-button_brand {candidat.isAccepted ? 'accepted-button' : ''}" data-my-value={candidat.Id} onclick={handleAcceptClick}>Accept</button> -->
+
+                        <button class="slds-button slds-button_destructive" data-candidate-id={candidat.Id} data-status="Resume reviewed" onclick={submitFlow} >Reject</button>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+        <div class="slds-p-vertical_medium slds-m-top_large slds-align_absolute-center">
+    <lightning-button-icon
+        icon-name="utility:left"
+        title="Previous"
+        variant="border-filled"
+        alternative-text="Previous"
+        disabled={isPrevDisabled}
+        onclick={handlePreviousPage}
+    ></lightning-button-icon>
+    <span class="slds-m-horizontal_small">{pageNumber}</span>
+    <lightning-button-icon
+        icon-name="utility:right"
+        title="Next"
+        variant="border-filled"
+        alternative-text="Next"
+        disabled={isNextDisabled}
+        onclick={handleNextPage}
+    ></lightning-button-icon>
+</div>
+    </div>
+
+
+    
+    <div class="slds-m-top_medium"  style="max-height: 500px;overflow-y: auto;">
+                <div class="slds-m-vertical_xxx-small slds-grid slds-grid_align-spread slds-p-bottom_small">
+        <h2  class="slds-text-heading_medium slds-m-bottom_xx-small slds-p-bottom_small">Underscored candidates</h2>
+            <!-- <div>
+                <lightning-button variant="brand" label="Reject All" title="Reject All" onclick={rejectCandidates} class="slds-m-left_x-small"></lightning-button>
+            </div> -->
+        </div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+            <thead>
+                <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Full Name">Job Application</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Full Name">Full Name</div>
+                </th>
+
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Email">Email</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Rating">Rating</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Score">Status</div>
+
+                </th>
+                <!-- <th class="" scope="col">
+                    <div class="slds-truncate" title="Score">Score</div>
+                </th> -->
+                <th class="" scope="col">
+                   <!-- <div class="slds-truncate" title="Actions">Actions</div> -->
+                </th>
+                </tr>
+            </thead>
+            <tbody >
+                <tr  key={candidat.Id} class="slds-hint-parent" for:each={underscoredCandidates} for:item="candidat">
+                    <td scope="row">
+                        <div class="slds-truncate" title={candidat.appName}>
+                            <a href={candidat.JobLink} target="_blank">{candidat.appName}</a>
+                        </div>
+                    </td>
+                    <td scope="row">
+                    <div class="slds-truncate" title={candidat.Name}>
+                        <a href={candidat.LeadLink} target="_blank">{candidat.Name}</a>
+                    </div>
+                    </td>
+     
+                    <td >
+                    <div class="slds-truncate" title={candidat.Email}>
+                        <a href=''>{candidat.Email}</a>
+                    </div>
+                    </td>
+                    <td >
+                    {candidat.Score__c} %
+                    </td>
+                    <td >
+                    {candidat.Status__c}
+                    </td>
+                    <!-- <td >
+                    {candidat.Score}
+                    </td>      -->
+                    <td class="slds-grid slds-grid_align-end">
+                        <button class="slds-button slds-button_brand" data-candidate-id={candidat.Id} data-status="Schedule Interviews" onclick={submitFlow} if:false={candidat.showAccept}>Accept</button>
+                            <!-- <button class="slds-button slds-button_brand {candidat.isAccepted ? 'accepted-button' : ''}" data-my-value={candidat.Id} onclick={handleAcceptClick}>Accept</button> -->
+                        <button class="slds-button slds-button_destructive" data-candidate-id={candidat.Id} data-status="Rejected" onclick={submitFlow} if:false={candidat.showReject}>Reject</button>
+
+         
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+        <div class="slds-p-vertical_medium slds-m-top_large slds-align_absolute-center">
+    <lightning-button-icon
+        icon-name="utility:left"
+        title="Previous"
+        variant="border-filled"
+        alternative-text="Previous"
+        disabled={underscoredIsPrevDisabled}
+        onclick={handleUnderscoredPreviousPage}
+    ></lightning-button-icon>
+    <span class="slds-m-horizontal_small">{underscoredPageNumber}</span>
+    <lightning-button-icon
+        icon-name="utility:right"
+        title="Next"
+        variant="border-filled"
+        alternative-text="Next"
+        disabled={underscoredIsNextDisabled}
+        onclick={handleUnderscoredNextPage}
+    ></lightning-button-icon>
+</div>
+    </div>
+    
+    
+    
+
+    <div class="slds-m-vertical_xxx-small slds-grid slds-grid_align-end">
+
+    <lightning-flow  if:true={renderFlow}
+               flow-api-name='Accept_job_application'
+               flow-input-variables={inputVariables}
+                onstatuschange={handleStatusChange}  
+       >
+    </lightning-flow>
+
+        <!-- <lightning-button label="Add to queue" title="Add to queue" onclick={submitFlow} class="slds-m-left_x-small"></lightning-button> -->
+
+    </div>
+</template>
